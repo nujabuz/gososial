@@ -1,0 +1,42 @@
+version: "2"
+linters:
+  default: fast
+  enable:
+
+    # --- Core Code Quality & Bugs ---
+    - errcheck
+    - govet
+    - staticcheck
+    - unused
+    - ineffassign
+
+    # --- DDD & Architectural Boundaries ---
+    - wrapcheck
+    - tagliatelle
+
+
+    # --- Performance & Memory ---
+    - prealloc
+    - gocritic
+    - bodyclose
+    - noctx
+
+
+    # --- Security & Robustness ---
+    - gosec
+    - copyloopvar
+
+    - wsl_v5
+    - gomodguard_v2
+  disable:
+    - wsl
+    - gomodguard
+    - depguard
+    - wrapcheck
+  settings:
+    wsl_v5:
+      allow-first-in-block: true
+      allow-whole-block: false
+      branch-max-lines: 2
+  output:
+    format: 'checkstyle:report.xml,json:stdout,colored-line-number'

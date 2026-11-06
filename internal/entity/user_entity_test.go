@@ -1,7 +1,9 @@
 package entity_test
 
 import (
+	"errors"
 	"testing"
+	"time"
 
 	"github.com/nujabuz/gososial/internal/entity"
 	"github.com/stretchr/testify/assert"
@@ -17,12 +19,77 @@ func TestUser_NewUser_Success(t *testing.T) {
 	assert.Equal(t, "nujabuz123", user.Password)
 }
 
+func TestUser_NewUser_UpdateUsername(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		user, err := entity.NewUser("nujabuz", "nujabuz123")
+
+		assert.Nil(t, err)
+		assert.NotNil(t, user)
+
+		err = user.UpdateUsername("nujabes")
+
+		time.Sleep(1 * time.Millisecond)
+
+		assert.Nil(t, err)
+		assert.Equal(t, "nujabes", user.Username)
+		assert.True(t, user.UpdatedAt.After(user.CreatedAt))
+	})
+
+	t.Run("failed", func(t *testing.T) {
+		user, err := entity.NewUser("nujabuz", "nujabuz123")
+
+		assert.Nil(t, err)
+		assert.NotNil(t, user)
+		assert.Equal(t, "nujabuz", user.Username)
+
+		err = user.UpdateUsername("nuj")
+
+		time.Sleep(1 * time.Millisecond)
+
+		assert.NotNil(t, err)
+		assert.True(t, user.UpdatedAt.After(user.CreatedAt))
+	})
+}
+
+func TestUser_NewUser_UpdatePassword(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		user, err := entity.NewUser("nujabuz", "nujabuz123")
+
+		assert.Nil(t, err)
+		assert.NotNil(t, user)
+
+		err = user.UpdatePassword("nujabes123")
+
+		time.Sleep(1 * time.Millisecond)
+
+		assert.Nil(t, err)
+		assert.Equal(t, "nujabes123", user.Password)
+		assert.True(t, user.UpdatedAt.After(user.CreatedAt))
+	})
+
+	t.Run("failed", func(t *testing.T) {
+		user, err := entity.NewUser("nujabuz", "nujabuz123")
+
+		assert.Nil(t, err)
+		assert.NotNil(t, user)
+
+		err = user.UpdatePassword("nuja")
+
+		time.Sleep(1 * time.Millisecond)
+
+		assert.NotNil(t, err)
+		assert.True(t, user.UpdatedAt.After(user.CreatedAt))
+	})
+}
+
 func TestUser_NewUser_Failed_EmptyUsername(t *testing.T) {
 	// test username empty
 	user, err := entity.NewUser("", "nujabuz123")
 
 	assert.NotNil(t, err)
 	assert.Nil(t, user)
+
+	assert.True(t, errors.Is(err, entity.ErrValidation))
 }
 
 func TestUser_NewUser_Failed_UsernameMoreThanMaximum(t *testing.T) {

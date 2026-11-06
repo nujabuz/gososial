@@ -2,4 +2,9 @@ package entity
 
 import "errors"
 
-var ErrValidation = errors.New("failed validation")
+var (
+	// common errors.
+
+	ErrValidation = errors.New("failed validation")
+	ErrNotFound   = errors.New("not found")
+)
